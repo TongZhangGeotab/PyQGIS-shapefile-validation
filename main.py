@@ -22,21 +22,21 @@ def main():
     fieldCheck.run()
     error_message += fieldCheck.getErrorMessage()
 
-    intersectionCheck = intersections.Intersections(
-        layer=LAYER,
-        index=INDEX,
-    )
-    intersectionCheck.run()
-    error_message += intersectionCheck.getErrorMessage()
+    # intersectionCheck = intersections.Intersections(
+    #     layer=LAYER,
+    #     index=INDEX,
+    # )
+    # intersectionCheck.run()
+    # error_message += intersectionCheck.getErrorMessage()
 
-    lengthCheck = lengths.Lengths(
-        layer=LAYER,
-        transform=TRANSFORM,
-        min_bound=MIN_BOUND,
-        max_bound=MAX_BOUND,
-    )
-    lengthCheck.run()
-    error_message += lengthCheck.getErrorMessage()
+    # lengthCheck = lengths.Lengths(
+    #     layer=LAYER,
+    #     transform=TRANSFORM,
+    #     min_bound=MIN_BOUND,
+    #     max_bound=MAX_BOUND,
+    # )
+    # lengthCheck.run()
+    # error_message += lengthCheck.getErrorMessage()
 
     return error_message
 

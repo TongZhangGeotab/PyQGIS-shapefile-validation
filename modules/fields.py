@@ -52,13 +52,18 @@ class Fields:
 
         result, segments = self.checkMandatoryColumn('segment')
         if result:
-            segment_set = set()
+            segment_set = {}
             for segment, id in segments:
                 if segment in segment_set:
-                    self._error_message += f'error: duplicated segment: feature {id}\n'
+                    segment_set[segment].append(id)
                 else:
-                    segment_set.add(segment)
-            
+                    segment_set[segment] = [id]
+
+        for segment in segment_set:
+            if len(segment_set[segment]) > 1:
+                    self._error_message += f'error: duplicated segment name {segment} for features {segment_set[segment]}\n'
+
+
         self.checkOptionalColumn('roadwidth', 'int')
         self.checkOptionalColumn('passcount', 'int')
 
