@@ -1,7 +1,9 @@
 class Intersections:
-    def __init__(self, layer):
+    def __init__(self, layer, index):
         self._layer = layer
         self._error_message = ''
+        self._index = index
+        self._intersections = {}
     
     @staticmethod
     def get_endpoints(geometry):
@@ -19,15 +21,29 @@ class Intersections:
     def run(self):
         features = list(self._layer.getFeatures())
 
-        for i, f1 in enumerate(features):
+        feature_dict = {}
+        for feature in features:
+            self._index.insertFeature(feature)
+            feature_dict[feature.id()] = feature
+
+        for f1 in features:
             g1 = f1.geometry()
             p11, p12 = self.get_endpoints(g1)
-            for f2 in features[i+1:]:
+
+            candidate_ids = self._index.intersects(g1.boundingBox())
+            for candidate_id in candidate_ids:
+                if candidate_id == f1.id():
+                    continue
+
+                f2 = feature_dict[candidate_id]
                 g2 = f2.geometry()
+
                 if g1.intersects(g2):
                     p21, p22 = self.get_endpoints(g2)
                     if p11 != p21 and p11 != p22 and p12 != p21 and p12 != p22:
-                        self._error_message += f'error: intersection between feature {f1.id()} and feature {f2.id()}\n'
+                        if f2.id() not in self._intersections or self._intersections[f2.id()] != f1.id():
+                            self._intersections[f1.id()] = f2.id()
+                            self._error_message += f'error: intersection between feature {f1.id()} and feature {f2.id()}\n'
 
     def getErrorMessage(self):
         return self._error_message

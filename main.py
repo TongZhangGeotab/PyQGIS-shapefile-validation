@@ -4,8 +4,10 @@ from modules import fields
 from modules import intersections
 from modules import lengths
 
-FILE_PATH = os.path.expanduser('~/Downloads/LasVegas_Demo_Data/LasVegas_Route.shp')
+FILE_PATH = os.path.expanduser('~/Downloads/Mississauga_Demo_Data/Halton_roads.shp')
 LAYER = QgsVectorLayer(FILE_PATH, '', 'ogr')
+
+INDEX = QgsSpatialIndex()
 
 SOURCE_CRS = QgsCoordinateReferenceSystem(4326)
 DEST_CRS = QgsCoordinateReferenceSystem(3395)
@@ -20,7 +22,10 @@ def main():
     fieldCheck.run()
     error_message += fieldCheck.getErrorMessage()
 
-    intersectionCheck = intersections.Intersections(LAYER)
+    intersectionCheck = intersections.Intersections(
+        layer=LAYER,
+        index=INDEX,
+    )
     intersectionCheck.run()
     error_message += intersectionCheck.getErrorMessage()
 
