@@ -10,11 +10,13 @@ iface.addVectorLayer(FILE_PATH, '', 'ogr')
 
 INDEX = QgsSpatialIndex()
 
+# change to 20 - 1000
+MIN_BOUND = 20
+MAX_BOUND = 1000
+
 SOURCE_CRS = QgsCoordinateReferenceSystem(4326)
 DEST_CRS = QgsCoordinateReferenceSystem(3395)
 TRANSFORM = QgsCoordinateTransform(SOURCE_CRS, DEST_CRS, QgsProject.instance())
-MAX_BOUND = 300
-MIN_BOUND = 100
 
 DISTANCE_AREA = QgsDistanceArea()
 DISTANCE_AREA.setEllipsoid('WGS84')
@@ -34,7 +36,6 @@ def main():
     )
     intersectionCheck.run()
     error_message += intersectionCheck.getErrorMessage()
-
 
     lengthCheck = lengths.Lengths(
         layer=LAYER,
