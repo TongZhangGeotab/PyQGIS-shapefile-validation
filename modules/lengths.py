@@ -8,15 +8,16 @@ class Lengths:
     Checks line segment lengths
     """
 
-    def __init__(self, layer, transform, min_bound, max_bound):
+    def __init__(self, layer, min_bound, max_bound, transform, distance_area):
         """
         Constructor
         """
         self._layer = layer
         self._error_message = ""
-        self._transform = transform
         self._min_bound = min_bound
         self._max_bound = max_bound
+        self._transform = transform
+        self._distance_area = distance_area
 
     def run(self):
         """
@@ -25,8 +26,13 @@ class Lengths:
         # Calculate length in meters for each feature in the layer
         for f in self._layer.getFeatures():
             geom = f.geometry()
-            geom.transform(self._transform)
-            length_meters = geom.length()
+            # Method 1: Use a QGS distance area object
+            length_meters = self._distance_area.measureLength(geom)
+
+            # Method 2: Transform to a projected coordinate reference system
+            # geom.transform(self._transform)
+            # length_meters = geom.length()
+
             # If line is too long or too short, add warning
             if length_meters > self._max_bound:
                 self._error_message += f"warning: feature {f.id()} exceeds {self._max_bound} m\n"
