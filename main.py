@@ -14,10 +14,6 @@ INDEX = QgsSpatialIndex()
 MIN_BOUND = 20
 MAX_BOUND = 1000
 
-SOURCE_CRS = QgsCoordinateReferenceSystem(4326)
-DEST_CRS = QgsCoordinateReferenceSystem(3395)
-TRANSFORM = QgsCoordinateTransform(SOURCE_CRS, DEST_CRS, QgsProject.instance())
-
 DISTANCE_AREA = QgsDistanceArea()
 DISTANCE_AREA.setEllipsoid('WGS84')
 CRS = QgsCoordinateReferenceSystem("EPSG:4326")
@@ -41,7 +37,6 @@ def main():
         layer=LAYER,
         min_bound=MIN_BOUND,
         max_bound=MAX_BOUND,
-        transform=TRANSFORM,
         distance_area = DISTANCE_AREA,
     )
     lengthCheck.run()
