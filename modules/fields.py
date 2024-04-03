@@ -1,3 +1,5 @@
+import itertools
+
 class Fields:
     def __init__(self, layer):
         self._layer = layer
@@ -61,7 +63,13 @@ class Fields:
 
         for segment in segment_set:
             if len(segment_set[segment]) > 1:
-                    self._error_message += f'error: duplicated segment name {segment} for features {segment_set[segment]}\n'
+                    combinations = itertools.combinations(segment_set[segment], 2)
+                    for combination in combinations:
+                        f1 = self._layer.getFeature(combination[0])
+                        f2 = self._layer.getFeature(combination[1])
+                        group_attribute = self._mandatory_fields['group']
+                        if not group_attribute or f1[group_attribute] == f2[group_attribute]:
+                            self._error_message += f'error: feature {combination[0]} and feature {combination[1]} have the same segment name {segment}\n'
 
 
         self.checkOptionalColumn('roadwidth', 'int')
