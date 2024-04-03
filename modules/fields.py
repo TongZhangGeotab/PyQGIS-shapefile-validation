@@ -98,14 +98,7 @@ class Fields:
             for segment in segment_set:
                 # If any segment has 2 or more associated ids, check if they are duplicated names
                 if len(segment_set[segment]) > 1:
-                    combinations = itertools.combinations(segment_set[segment], 2)
-                    for combination in combinations:
-                        f1 = self._layer.getFeature(combination[0])
-                        f2 = self._layer.getFeature(combination[1])
-                        group_attribute = self._mandatory_fields["group"]
-                        # If they are in the same group, duplicate name
-                        if not group_attribute or f1[group_attribute] == f2[group_attribute]:
-                            self._error_message += f"error: feature {combination[0]} and feature {combination[1]} have the same segment name {segment}\n"
+                    self._error_message += f"error: features {segment_set[segment]} share segment name {segment}\n"
 
         self.checkOptionalColumn("roadwidth", "int")
         self.checkOptionalColumn("passcount", "int")
