@@ -1,16 +1,19 @@
+"""
+Utility script to zoom to a feature by id
+"""
+
 import os
 
-file_path = os.path.expanduser('~/Downloads/LasVegas_Demo_Data/LasVegas_Route.shp')
-layer = QgsVectorLayer(file_path, '', 'ogr')
+feature_id = 510
 
-canvas = iface.mapCanvas()  # Get the map canvas
-feature_id = 510  # Replace with the ID of the feature you want to zoom to
+file_path = os.path.expanduser("~/Downloads/LasVegas_Demo_Data/LasVegas_Route.shp")
+layer = QgsVectorLayer(file_path, "", "ogr")
 
-# Assuming 'line_layer' is your QgsVectorLayer instance
-feature = layer.getFeature(feature_id)  # Get the feature by its ID
+canvas = iface.mapCanvas()
+feature = layer.getFeature(feature_id)
 
-# Check if the feature exists and has geometry
 if feature and feature.hasGeometry():
-    # Zoom to the bounding box (extent) of the feature
     canvas.setExtent(feature.geometry().boundingBox())
-    canvas.refresh()  # Refresh the map canvas to apply the changes
+    canvas.refresh()
+else:
+    print(f"feature {feature_id} does not exist")

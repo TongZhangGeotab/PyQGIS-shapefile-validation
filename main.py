@@ -4,8 +4,8 @@ from modules import fields
 from modules import intersections
 from modules import lengths
 
-FILE_PATH = os.path.expanduser('~/Downloads/Mississauga_Demo_Data/Halton_roads.shp')
-LAYER = QgsVectorLayer(FILE_PATH, '', 'ogr')
+FILE_PATH = os.path.expanduser("~/Downloads/Mississauga_Demo_Data/Halton_roads.shp")
+LAYER = QgsVectorLayer(FILE_PATH, "", "ogr")
 
 INDEX = QgsSpatialIndex()
 
@@ -15,8 +15,9 @@ TRANSFORM = QgsCoordinateTransform(SOURCE_CRS, DEST_CRS, QgsProject.instance())
 MAX_BOUND = 300
 MIN_BOUND = 100
 
+
 def main():
-    error_message = ''
+    error_message = ""
 
     fieldCheck = fields.Fields(LAYER)
     fieldCheck.run()
@@ -39,6 +40,7 @@ def main():
     # error_message += lengthCheck.getErrorMessage()
 
     return error_message
+
 
 error_message = main()
 if error_message:
