@@ -76,6 +76,23 @@ class Fields:
                 if entry <= 0:
                     self._error_message += f"error: feature {id} has non positive {column} value\n"
 
+    def check_segment_names(self, segments):
+        """
+        Checks if there are any segments that have the same name
+        """
+        segment_set = {}
+        # Make dict of segment names and associate id(s)
+        for segment, id in segments:
+            if segment in segment_set:
+                segment_set[segment].append(id)
+            else:
+                segment_set[segment] = [id]
+
+        for segment in segment_set:
+            # If any segment has 2 or more associated ids, check if they are duplicated names
+            if len(segment_set[segment]) > 1:
+                self._error_message += f"error: features {segment_set[segment]} share segment name {segment}\n"
+
     def run(self):
         """
         Determine all errors and warnings in the attribute table
@@ -87,18 +104,7 @@ class Fields:
         # Check for duplicate segment names
         result, segments = self.checkMandatoryColumn("segment")
         if result:
-            segment_set = {}
-            # Make dict of segment names and associate id(s)
-            for segment, id in segments:
-                if segment in segment_set:
-                    segment_set[segment].append(id)
-                else:
-                    segment_set[segment] = [id]
-
-            for segment in segment_set:
-                # If any segment has 2 or more associated ids, check if they are duplicated names
-                if len(segment_set[segment]) > 1:
-                    self._error_message += f"error: features {segment_set[segment]} share segment name {segment}\n"
+            self.check_segment_names(segments)
 
         self.checkOptionalColumn("roadwidth", "int")
         self.checkOptionalColumn("passcount", "int")
