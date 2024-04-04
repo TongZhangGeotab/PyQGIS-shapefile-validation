@@ -1,6 +1,7 @@
 """
 Class for checking intersections
 """
+
 import logging
 
 
@@ -14,10 +15,14 @@ class Intersections:
         Constructor
         """
         self._layer = layer
+        self._logger = logging.getLogger("QGIS_logger")
+
+        # Spatial index
+        self._index = index
+
+        # Track if an error exists and the feedback message
         self._error = False
         self._feedback_message = "\nSegments must not overlap or intersect to reduce instances of vehicles accidentally entering neighboring segments. Overlapping segments may cause the Route Completion Report to inaccurately reflect vehicle passes on segments. If intersecting or overlapping segments exist, run a tool (for example, Split Lines) at intersections to produce a non-intersection line layer.\n"
-        self._index = index
-        self._logger = logging.getLogger("QGIS_logger")
 
     @staticmethod
     def get_endpoints(geometry):
@@ -34,6 +39,7 @@ class Intersections:
             line = geometry.asPolyline()
             p1 = line[0]
             p2 = line[-1]
+
         return p1, p2
 
     def run(self):
@@ -42,6 +48,7 @@ class Intersections:
         """
         features = list(self._layer.getFeatures())
 
+        # Add all features to spatial index and create a reference key by id
         feature_dict = {}
         for feature in features:
             self._index.insertFeature(feature)
@@ -52,23 +59,26 @@ class Intersections:
             g1 = f1.geometry()
             p11, p12 = self.get_endpoints(g1)
 
+            # Find possible intersections by bounding box - cheaper than with true intersection
             candidate_ids = self._index.intersects(g1.boundingBox())
             for candidate_id in candidate_ids:
+                # Do not test a segment against itself
                 if candidate_id == f1.id():
                     continue
 
                 f2 = feature_dict[candidate_id]
                 g2 = f2.geometry()
 
+                # Check if a candidate actually intersects
                 if g1.intersects(g2):
+                    # Check if the lines only touch at the ends - not a true intersection
                     p21, p22 = self.get_endpoints(g2)
                     if p11 != p21 and p11 != p22 and p12 != p21 and p12 != p22:
-                        if (
-                            f2.id() not in intersections
-                            or intersections[f2.id()] != f1.id()
-                        ):
+                        # Do not add duplicates
+                        if f2.id() not in intersections or intersections[f2.id()] != f1.id():
                             intersections[f1.id()] = f2.id()
-                
+
+        # Log an error if there are intersections
         if intersections:
             self._error = True
             self._logger.error(f"{len(intersections)} intersections in the shapefile")

@@ -17,15 +17,19 @@ MIN_BOUND = 20
 MAX_BOUND = 1000
 
 DISTANCE_AREA = QgsDistanceArea()
-DISTANCE_AREA.setEllipsoid('WGS84')
+DISTANCE_AREA.setEllipsoid("WGS84")
 CRS = QgsCoordinateReferenceSystem("EPSG:4326")
 DISTANCE_AREA.setSourceCrs(CRS, QgsProject.instance().transformContext())
 
-configure_logger.configure_logger(os.path.dirname(os.path.realpath(__file__)), datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
+configure_logger.configure_logger(
+    os.path.dirname(os.path.realpath(__file__)),
+    datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S"),
+)
+
 
 def main():
     logger = logging.getLogger("QGIS_logger")
-    
+
     feedback_message = ""
 
     fieldCheck = fields.Fields(LAYER)
@@ -41,7 +45,7 @@ def main():
         layer=LAYER,
         min_bound=MIN_BOUND,
         max_bound=MAX_BOUND,
-        distance_area = DISTANCE_AREA,
+        distance_area=DISTANCE_AREA,
     )
     lengthCheck.run()
 
@@ -58,6 +62,7 @@ def main():
         feedback_message += message
 
     return feedback_message
+
 
 feedback_message = main()
 if feedback_message:
