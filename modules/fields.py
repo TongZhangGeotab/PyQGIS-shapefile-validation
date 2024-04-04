@@ -2,8 +2,7 @@
 Class for checking attribute table
 """
 
-import itertools
-
+import logging
 
 class Fields:
     """
@@ -15,8 +14,15 @@ class Fields:
         Constructor
         """
         self._layer = layer
+        self._header_syntax_error = False
+        self._header_syntax_message = "\nThe attribute column heading does not match the required formatting. The column header syntax is character-sensitive. If the characters do not match the required format, the upload to MyGeotab will fail. Please adjust the data columns to match the formatting guidelines outlined in the Adding Required Route Completion Attributes section of the Route Completion configuration with a Shapefile [PUBLIC] document.\n"
+        self._null_error = False
+        self._null_message = "\nPlease ensure there is no missing or incomplete data for the group, route, or segment column. If a feature contains a NULL value or the record is missing, the file upload to MyGeotab will fail. Ensure that every feature has a valid attribute for each column header.\n"
+        self._duplicate_segment_error = False
+        self._duplicate_segment_message = "\nRoutes are made up of segments and must have a unique attribute to upload the file to MyGeotab. Please adjust the values to align with this requirement. There are many segment-naming options. The most common option is combining the street name with a unique identifier (an object ID or row number). For example, the segment name for the field calculator expression may be written as “Street Name + Object ID” to create a unique attribute.\n"
+        self._type_or_value_error = False
+        self._type_or_value_message = "\nAll values for the roadWidth and passCount field categories must be inputted in meters as integers without any decimals. If you are converting from feet to meters, round up or down to the nearest whole number. The value must be greater than 0 to be valid.\n"
         self._fields = []
-        self._error_message = ""
         self._mandatory_fields = {
             "group": False,
             "route": False,
@@ -26,6 +32,7 @@ class Fields:
             "roadwidth": False,
             "passcount": False,
         }
+        self._logger = logging.getLogger("QGIS_logger")
 
     def parseFieldNames(self):
         """
@@ -43,7 +50,8 @@ class Fields:
         Check a mandatory column for missing values and returns list of entries in that column
         """
         if not self._mandatory_fields[fieldName]:
-            self._error_message += f"error: {fieldName} column is missing\n"
+            self._header_syntax_error = True
+            self._logger.error(f"{fieldName} column is missing")
         else:
             entries = [
                 (feature[self._mandatory_fields[fieldName]], feature.id())
@@ -51,7 +59,8 @@ class Fields:
             ]
             for entry, id in entries:
                 if entry is None:
-                    self._error_message += f"error: feature {id} has Null {fieldName} value\n"
+                    self._null_error = True
+                    self._logger.error(f"feature {id} has Null {fieldName} value")
             return True, entries
         return False, None
 
@@ -60,12 +69,13 @@ class Fields:
         Check an optional column for data type and invalid values
         """
         if not self._optional_fields[column]:
-            self._error_message += f"warning: {column} column is unpopulated, using defaults\n"
+            self._logger.info(f"{column} is unpopulated, using defaults")
         else:
             data_type = self._layer.fields().field(self._optional_fields[column]).typeName()
             # Check if data type name contains type we want - for cases like int8, int16, etc. names
             if type not in data_type.lower():
-                self._error_message += f"error: {column} datatype is {data_type} not {type}\n"
+                self._type_or_value_error = True
+                self._logger.error(f"{column} datatype is {data_type} not {type}")
 
             # Check if any of the entires have invalid values
             entries = [
@@ -74,7 +84,8 @@ class Fields:
             ]
             for entry, id in entries:
                 if entry <= 0:
-                    self._error_message += f"error: feature {id} has non positive {column} value\n"
+                    self._type_or_value_error = True
+                    self._logger.error(f"feature {id} has non positive {column} value")
 
     def check_segment_names(self, segments):
         """
@@ -91,7 +102,8 @@ class Fields:
         for segment in segment_set:
             # If any segment has 2 or more associated ids, check if they are duplicated names
             if len(segment_set[segment]) > 1:
-                self._error_message += f"error: features {segment_set[segment]} share segment name {segment}\n"
+                self._duplicate_segment_error = True
+                self._logger.error(f"features {segment_set[segment]} share segment name {segment}")
 
     def run(self):
         """
@@ -109,8 +121,20 @@ class Fields:
         self.checkOptionalColumn("roadwidth", "int")
         self.checkOptionalColumn("passcount", "int")
 
-    def getErrorMessage(self):
+    def getFeedback(self):
         """
-        Return the error message
+        Return the feedback message
         """
-        return self._error_message
+        feedback_message = ""
+        if self._header_syntax_error:
+            feedback_message += self._header_syntax_message
+        if self._null_error:
+            feedback_message += self._null_message
+        if self._duplicate_segment_error:
+            feedback_message += self._duplicate_segment_message
+        if self._type_or_value_error:
+            feedback_message += self._type_or_value_message
+        if feedback_message:
+            return True, feedback_message
+
+        return False, None

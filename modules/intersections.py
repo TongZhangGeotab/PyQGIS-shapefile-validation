@@ -1,6 +1,7 @@
 """
 Class for checking intersections
 """
+import logging
 
 
 class Intersections:
@@ -13,9 +14,10 @@ class Intersections:
         Constructor
         """
         self._layer = layer
-        self._error_message = ""
+        self._error = False
+        self._feedback_message = "\nSegments must not overlap or intersect to reduce instances of vehicles accidentally entering neighboring segments. Overlapping segments may cause the Route Completion Report to inaccurately reflect vehicle passes on segments. If intersecting or overlapping segments exist, run a tool (for example, Split Lines) at intersections to produce a non-intersection line layer.\n"
         self._index = index
-        self._intersections = {}
+        self._logger = logging.getLogger("QGIS_logger")
 
     @staticmethod
     def get_endpoints(geometry):
@@ -45,6 +47,7 @@ class Intersections:
             self._index.insertFeature(feature)
             feature_dict[feature.id()] = feature
 
+        intersections = {}
         for f1 in features:
             g1 = f1.geometry()
             p11, p12 = self.get_endpoints(g1)
@@ -61,14 +64,20 @@ class Intersections:
                     p21, p22 = self.get_endpoints(g2)
                     if p11 != p21 and p11 != p22 and p12 != p21 and p12 != p22:
                         if (
-                            f2.id() not in self._intersections
-                            or self._intersections[f2.id()] != f1.id()
+                            f2.id() not in intersections
+                            or intersections[f2.id()] != f1.id()
                         ):
-                            self._intersections[f1.id()] = f2.id()
-                            self._error_message += f"error: intersection between feature {f1.id()} and feature {f2.id()}\n"
+                            intersections[f1.id()] = f2.id()
+                
+        if intersections:
+            self._error = True
+            self._logger.error(f"{len(intersections)} intersections in the shapefile")
+            self._logger.info(f"intersections between the following features {intersections}")
 
-    def getErrorMessage(self):
+    def getFeedback(self):
         """
-        Return the error message
+        Return the feedback message
         """
-        return self._error_message
+        if self._error:
+            return True, self._feedback_message
+        return False, None

@@ -1,16 +1,18 @@
+import datetime
+import logging
 import os
 
 from modules import fields
 from modules import intersections
 from modules import lengths
+from utilities import configure_logger
 
 FILE_PATH = os.path.expanduser("~/Downloads/Mississauga_Demo_Data/Halton_roads.shp")
 LAYER = QgsVectorLayer(FILE_PATH, "", "ogr")
-iface.addVectorLayer(FILE_PATH, '', 'ogr')
+# iface.addVectorLayer(FILE_PATH, '', 'ogr')
 
 INDEX = QgsSpatialIndex()
 
-# change to 20 - 1000
 MIN_BOUND = 20
 MAX_BOUND = 1000
 
@@ -19,19 +21,21 @@ DISTANCE_AREA.setEllipsoid('WGS84')
 CRS = QgsCoordinateReferenceSystem("EPSG:4326")
 DISTANCE_AREA.setSourceCrs(CRS, QgsProject.instance().transformContext())
 
+configure_logger.configure_logger(os.path.dirname(os.path.realpath(__file__)), datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
+
 def main():
-    error_message = ""
+    logger = logging.getLogger("QGIS_logger")
+    
+    feedback_message = ""
 
     fieldCheck = fields.Fields(LAYER)
     fieldCheck.run()
-    error_message += fieldCheck.getErrorMessage()
 
     intersectionCheck = intersections.Intersections(
         layer=LAYER,
         index=INDEX,
     )
     intersectionCheck.run()
-    error_message += intersectionCheck.getErrorMessage()
 
     lengthCheck = lengths.Lengths(
         layer=LAYER,
@@ -40,11 +44,21 @@ def main():
         distance_area = DISTANCE_AREA,
     )
     lengthCheck.run()
-    error_message += lengthCheck.getErrorMessage()
 
-    return error_message
+    result, message = fieldCheck.getFeedback()
+    if result:
+        feedback_message += message
 
+    result, message = intersectionCheck.getFeedback()
+    if result:
+        feedback_message += message
 
-error_message = main()
-if error_message:
-    print(error_message)
+    result, message = lengthCheck.getFeedback()
+    if result:
+        feedback_message += message
+
+    return feedback_message
+
+feedback_message = main()
+if feedback_message:
+    print(feedback_message)
