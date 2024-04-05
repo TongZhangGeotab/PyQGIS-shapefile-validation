@@ -54,7 +54,7 @@ class Intersections:
             self._index.insertFeature(feature)
             feature_dict[feature.id()] = feature
 
-        intersections = {}
+        intersections = set()
         null_geoms = set()
         for f1 in features:
             g1 = f1.geometry()
@@ -81,9 +81,10 @@ class Intersections:
                     # Check if the lines only touch at the ends - not a true intersection
                     p21, p22 = self.get_endpoints(g2)
                     if p11 != p21 and p11 != p22 and p12 != p21 and p12 != p22:
-                        # Do not add duplicates
-                        if f2.id() not in intersections or intersections[f2.id()] != f1.id():
-                            intersections[f1.id()] = f2.id()
+                        # Make sure we're not adding duplicates
+                        id1 = min(f1.id(), f2.id())
+                        id2 = max(f1.id(), f2.id())
+                        intersections.add((id1, id2))
 
         # Log an error if there are intersections
         if intersections:
