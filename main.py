@@ -13,6 +13,7 @@ LAYER = QgsVectorLayer(FILE_PATH, "", "ogr")
 iface.addVectorLayer(FILE_PATH, '', 'ogr')
 QCoreApplication.processEvents()
 
+CRS = "EPSG:4326"
 INSTANCE = QgsProject.instance()
 
 INDEX = QgsSpatialIndex()
@@ -46,6 +47,7 @@ def main():
 
     coordinateCheck = coordinates.Coordinates(
         layer=LAYER,
+        correct_crs=CRS,
         instance=INSTANCE,
     )
     coordinateCheck.run()

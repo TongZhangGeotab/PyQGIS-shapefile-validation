@@ -1,7 +1,12 @@
+import logging
+
+
 class Coordinates:
-    def __init__(self, layer, instance):
+    def __init__(self, layer, correct_crs, instance):
         self._layer = layer
+        self._logger = logging.getLogger("QGS_logger")
         self._instance = instance
+        self._correct_crs = correct_crs
         self._crs_error = False
         self._crs_message = "\nThe routes uploaded to MyGeotab must use the WGS 84 - EPSG: 4326 coordinate reference system. Other versions of WGS 84 will not work nor will a local CRS. On QGIS or another GIS software, use a Reproject Layer or Assign Projection tool to change the shapefile from an existing coordinate reference system to a new coordinate reference system.\n"
         self._coord_error = False
@@ -9,13 +14,15 @@ class Coordinates:
 
     def run(self):
         crs_id = self._instance.crs().authid()
-        if crs_id !=  "EPSG:4326":
+        if crs_id !=  self._correct_crs:
             self._crs_error = True
+            self._logger.error(f"shapefile has crs {crs_id} instead of {self._correct_crs}")
         
         extents = self._layer.extent()    
         if (extents.xMinimum() < -180 or extents.xMaximum() > 180 or
             extents.yMinimum() < -90 or extents.yMaximum() > 90):
             self._coord_error = True
+            self._logger.error(f"shapefile coordinates are formatted incorrectly")
 
     def getFeedback(self):
         feedback_message = ""
