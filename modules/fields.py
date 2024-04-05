@@ -1,5 +1,5 @@
 """
-Class for checking attribute table
+Class for checking attribute table.
 """
 
 import logging
@@ -7,12 +7,12 @@ import logging
 
 class Fields:
     """
-    Checks attribute table fields
+    Checks attribute table fields.
     """
 
     def __init__(self, layer):
         """
-        Constructor
+        Constructor.
         """
         self._layer = layer
         self._logger = logging.getLogger("QGIS_logger")
@@ -40,7 +40,7 @@ class Fields:
 
     def parseFieldNames(self):
         """
-        Finds and stores the name of mandatory and optional column headers
+        Finds and stores the name of mandatory and optional column headers.
         """
         fields = [field.name() for field in self._layer.fields()]
         for field in fields:
@@ -55,7 +55,7 @@ class Fields:
 
     def checkMandatoryColumn(self, fieldName):
         """
-        Check a mandatory column for missing values and returns list of entries in that column
+        Check a mandatory column for missing values and returns list of entries in that column.
         """
         # Log an error if a mandatory field does not exist
         if not self._mandatory_fields[fieldName]:
@@ -78,7 +78,7 @@ class Fields:
 
     def checkOptionalColumn(self, column, type):
         """
-        Check an optional column for data type and invalid values
+        Check an optional column for data type and invalid values.
         """
         # Log an info statement if the optional field does not exist
         if not self._optional_fields[column]:
@@ -106,7 +106,7 @@ class Fields:
 
     def check_segment_names(self, segments):
         """
-        Checks if there are any segments that have the same name
+        Checks if there are any segments that have the same name.
         """
         # Make dict of segment names and associated id(s)
         segment_set = {}
@@ -124,7 +124,7 @@ class Fields:
 
     def run(self):
         """
-        Determine all errors and warnings in the attribute table
+        Determine all errors and warnings in the attribute table.
         """
         self.parseFieldNames()
 
@@ -142,7 +142,7 @@ class Fields:
 
     def getFeedback(self):
         """
-        Generate and return the feedback message
+        Generate and return the feedback message.
         """
         feedback_message = ""
         if self._header_syntax_error:
@@ -153,6 +153,7 @@ class Fields:
             feedback_message += self._duplicate_segment_message
         if self._type_or_value_error:
             feedback_message += self._type_or_value_message
+
         if feedback_message:
             return True, feedback_message
 

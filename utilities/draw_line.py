@@ -1,5 +1,5 @@
 """
-Utility script to add a line segment
+Utility script to add a line segment.
 """
 
 import os

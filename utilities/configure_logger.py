@@ -1,3 +1,7 @@
+"""
+Utility script to set up the logger.
+"""
+
 import datetime
 import logging
 import os

@@ -1,5 +1,5 @@
 """
-Class for checking intersections
+Class for checking intersections.
 """
 
 import logging
@@ -7,12 +7,12 @@ import logging
 
 class Intersections:
     """
-    Checks for intersections in the layet
+    Checks for intersections in the layer.
     """
 
     def __init__(self, layer, index):
         """
-        Constructor
+        Constructor.
         """
         self._layer = layer
         self._logger = logging.getLogger("QGIS_logger")
@@ -27,7 +27,7 @@ class Intersections:
     @staticmethod
     def get_endpoints(geometry):
         """
-        Gets the endpoints (first and last point) for a line segment
+        Gets the endpoints (first and last point) for a line segment.
         """
         # If multipart, get the first point of the first part and the last point of the last part
         if geometry.isMultipart():
@@ -44,7 +44,7 @@ class Intersections:
 
     def run(self):
         """
-        Determine all errors caused by intersections
+        Determine all errors caused by intersections.
         """
         features = list(self._layer.getFeatures())
 
@@ -96,7 +96,7 @@ class Intersections:
 
     def getFeedback(self):
         """
-        Return the feedback message
+        Return the feedback message.
         """
         if self._error:
             return True, self._feedback_message

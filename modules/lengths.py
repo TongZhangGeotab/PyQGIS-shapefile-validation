@@ -1,5 +1,5 @@
 """
-Class for checking the lenght of line segments
+Class for checking the lenght of line segments.
 """
 
 import logging
@@ -7,12 +7,12 @@ import logging
 
 class Lengths:
     """
-    Checks line segment lengths
+    Checks line segment lengths.
     """
 
     def __init__(self, layer, min_bound, max_bound, distance_area):
         """
-        Constructor
+        Constructor.
         """
         self._layer = layer
         self._logger = logging.getLogger("QGIS_logger")
@@ -30,7 +30,7 @@ class Lengths:
 
     def run(self):
         """
-        Determine all warnings caused by line segment lengths
+        Determine all warnings caused by line segment lengths.
         """
         short_lines = []
         long_lines = []
@@ -66,7 +66,7 @@ class Lengths:
 
     def getFeedback(self):
         """
-        Returns the feedback message
+        Returns the feedback message.
         """
         if self._warn:
             return True, self._feedback_message

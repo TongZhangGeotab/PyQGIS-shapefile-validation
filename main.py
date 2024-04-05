@@ -10,7 +10,7 @@ from utilities import configure_logger
 
 FILE_PATH = os.path.expanduser("~/Downloads/1/PW Scenarios - 1.shp")
 LAYER = QgsVectorLayer(FILE_PATH, "", "ogr")
-iface.addVectorLayer(FILE_PATH, '', 'ogr')
+iface.addVectorLayer(FILE_PATH, "", "ogr")
 QCoreApplication.processEvents()
 
 CRS = "EPSG:4326"

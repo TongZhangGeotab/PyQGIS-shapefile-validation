@@ -1,5 +1,5 @@
 """
-Utility script to zoom to a feature by id
+Utility script to zoom to a feature by id.
 """
 
 import os
