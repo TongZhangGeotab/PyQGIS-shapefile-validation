@@ -3,13 +3,17 @@ import logging
 import os
 
 from modules import fields
+from modules import coordinates
 from modules import intersections
 from modules import lengths
 from utilities import configure_logger
 
 FILE_PATH = os.path.expanduser("~/Downloads/1/PW Scenarios - 1.shp")
 LAYER = QgsVectorLayer(FILE_PATH, "", "ogr")
-# iface.addVectorLayer(FILE_PATH, '', 'ogr')
+iface.addVectorLayer(FILE_PATH, '', 'ogr')
+QCoreApplication.processEvents()
+
+INSTANCE = QgsProject.instance()
 
 INDEX = QgsSpatialIndex()
 
@@ -33,8 +37,22 @@ def main():
     feedback_message = ""
     null_geoms = set()
 
-    fieldCheck = fields.Fields(LAYER)
+    fieldCheck = fields.Fields(layer=LAYER)
     fieldCheck.run()
+
+    result, message = fieldCheck.getFeedback()
+    if result:
+        feedback_message += message
+
+    coordinateCheck = coordinates.Coordinates(
+        layer=LAYER,
+        instance=INSTANCE,
+    )
+    coordinateCheck.run()
+
+    result, message = coordinateCheck.getFeedback()
+    if result:
+        feedback_message += message
 
     intersectionCheck = intersections.Intersections(
         layer=LAYER,
@@ -42,6 +60,10 @@ def main():
     )
     intersection_nulls = intersectionCheck.run()
     null_geoms.update(intersection_nulls)
+
+    result, message = intersectionCheck.getFeedback()
+    if result:
+        feedback_message += message
 
     lengthCheck = lengths.Lengths(
         layer=LAYER,
@@ -51,14 +73,6 @@ def main():
     )
     length_nulls = lengthCheck.run()
     null_geoms.update(length_nulls)
-
-    result, message = fieldCheck.getFeedback()
-    if result:
-        feedback_message += message
-
-    result, message = intersectionCheck.getFeedback()
-    if result:
-        feedback_message += message
 
     result, message = lengthCheck.getFeedback()
     if result:
