@@ -55,8 +55,12 @@ class Intersections:
             feature_dict[feature.id()] = feature
 
         intersections = {}
+        null_geoms = set()
         for f1 in features:
             g1 = f1.geometry()
+            if not g1:
+                null_geoms.add(f1.id())
+                continue
             p11, p12 = self.get_endpoints(g1)
 
             # Find possible intersections by bounding box - cheaper than with true intersection
@@ -68,6 +72,9 @@ class Intersections:
 
                 f2 = feature_dict[candidate_id]
                 g2 = f2.geometry()
+                if not g2:
+                    null_geoms.add(f2.id())
+                    continue
 
                 # Check if a candidate actually intersects
                 if g1.intersects(g2):
@@ -82,7 +89,9 @@ class Intersections:
         if intersections:
             self._error = True
             self._logger.error(f"{len(intersections)} intersections in the shapefile")
-            self._logger.info(f"intersections between the following features {intersections}")
+            self._logger.info(f"intersections: {intersections}")
+
+        return null_geoms
 
     def getFeedback(self):
         """

@@ -36,8 +36,12 @@ class Lengths:
         long_lines = []
 
         # Calculate length in meters for each feature in the layer
+        null_geoms = set()
         for f in self._layer.getFeatures():
             geom = f.geometry()
+            if not geom:
+                null_geoms.add(f.id())
+                continue
             length_meters = self._distance_area.measureLength(geom)
 
             # If line is too long or too short, add to list
@@ -52,11 +56,13 @@ class Lengths:
         # Log a warning for all lines that are too short
         if short_lines:
             self._logger.warning(f"{len(short_lines)} features are less than {self._min_bound} m")
-            self._logger.info(f"features {short_lines} are less than {self._min_bound}")
+            self._logger.info(f"features less than {self._min_bound} m: {short_lines}")
         # Log a warning for all lines that are too long
         if long_lines:
             self._logger.warning(f"{len(long_lines)} features are greater than {self._max_bound} m")
-            self._logger.info(f"features {long_lines} are greater than {self._max_bound}")
+            self._logger.info(f"features greater than {self._max_bound} m: {long_lines}")
+
+        return null_geoms
 
     def getFeedback(self):
         """

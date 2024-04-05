@@ -7,7 +7,7 @@ from modules import intersections
 from modules import lengths
 from utilities import configure_logger
 
-FILE_PATH = os.path.expanduser("~/Downloads/Mississauga_Demo_Data/Halton_roads.shp")
+FILE_PATH = os.path.expanduser("~/Downloads/1/PW Scenarios - 1.shp")
 LAYER = QgsVectorLayer(FILE_PATH, "", "ogr")
 # iface.addVectorLayer(FILE_PATH, '', 'ogr')
 
@@ -31,6 +31,7 @@ def main():
     logger = logging.getLogger("QGIS_logger")
 
     feedback_message = ""
+    null_geoms = set()
 
     fieldCheck = fields.Fields(LAYER)
     fieldCheck.run()
@@ -39,7 +40,8 @@ def main():
         layer=LAYER,
         index=INDEX,
     )
-    intersectionCheck.run()
+    intersection_nulls = intersectionCheck.run()
+    null_geoms.update(intersection_nulls)
 
     lengthCheck = lengths.Lengths(
         layer=LAYER,
@@ -47,7 +49,8 @@ def main():
         max_bound=MAX_BOUND,
         distance_area=DISTANCE_AREA,
     )
-    lengthCheck.run()
+    length_nulls = lengthCheck.run()
+    null_geoms.update(length_nulls)
 
     result, message = fieldCheck.getFeedback()
     if result:
@@ -60,6 +63,10 @@ def main():
     result, message = lengthCheck.getFeedback()
     if result:
         feedback_message += message
+
+    if null_geoms:
+        logger.error(f"{len(null_geoms)} features have Null geometry")
+        logger.info(f"features with Null geometry: {null_geoms}")
 
     return feedback_message
 
