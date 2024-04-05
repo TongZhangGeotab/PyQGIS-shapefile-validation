@@ -15,9 +15,9 @@ class Coordinates:
         Constructor.
         """
         self._layer = layer
-        self._logger = logging.getLogger("QGS_logger")
+        self._logger = logging.getLogger("QGIS_logger")
         self._instance = instance
-        self._correct_crs = correct_crs
+        self._correct_crs = correct_crs.authid()
         self._crs_error = False
         self._crs_message = "\nThe routes uploaded to MyGeotab must use the WGS 84 - EPSG: 4326 coordinate reference system. Other versions of WGS 84 will not work nor will a local CRS. On QGIS or another GIS software, use a Reproject Layer or Assign Projection tool to change the shapefile from an existing coordinate reference system to a new coordinate reference system.\n"
         self._coord_error = False
