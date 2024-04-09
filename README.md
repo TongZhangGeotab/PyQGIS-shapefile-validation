@@ -28,7 +28,7 @@ Click on the run button
 This script will log all warnings and errors to the console, and all debug logs to a log file in the `logs` directory - the name of the logfile will be the timestamp of when the script was run
 
 The script will also output the feedback message for these warnings and errors to the console and a text file in the `feedback` directory (name is also the timestamp) as per the [Public Works: Route Shapefile Validation (Partner Guide) \[PUB\]
-](https://docs.google.com/document/d/1PRAwFHVcfzmP5Um6crQzm4FY151ZIkIZxw5yzwEOYb4/edit#heading=h.9qa6yfvbd55k)
+](https://docs.google.com/document/d/1PRAwFHVcfzmP5Um6crQzm4FY151ZIkIZxw5yzwEOYb4/)
 
 ## Using the Utilities
 
