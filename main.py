@@ -13,7 +13,8 @@ from modules import lengths
 from utilities import configure_logger
 
 # Upload layer and update project instance
-FILE_PATH = os.path.expanduser("~/Downloads/2/PW Scenarios - 2.shp")
+with open(f"{os.path.dirname(__file__)}/config.txt", 'r') as file:
+    FILE_PATH = file.read()
 LAYER = QgsVectorLayer(FILE_PATH, "", "ogr")
 iface.addVectorLayer(FILE_PATH, "", "ogr")
 QCoreApplication.processEvents()

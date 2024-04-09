@@ -4,11 +4,12 @@ Utility script to add a line segment.
 
 import os
 
-file_path = os.path.expanduser("~/Downloads/Mississauga_Demo_Data/Halton_roads.shp")
-layer = QgsVectorLayer(file_path, "", "ogr")
+with open(f"{os.path.dirname(__file__)}/config.txt", 'r') as file:
+    FILE_PATH = file.read()
+layer = QgsVectorLayer(FILE_PATH, "", "ogr")
 
 feature = QgsFeature(layer.fields())
-feature.setAttributes(["0", "TEST_ROUTE", "600", "Test Group", "2", "10", "425", "test"])
-geometry = QgsGeometry.fromPolyline([QgsPoint(-79.1719, 43.57), QgsPoint(-79.1719, 43.903)])
+feature.setAttributes(["0", "TEST_ROUTE", "0", "Test Group", "2", "10", "0", "test"])
+geometry = QgsGeometry.fromPolyline([QgsPoint(0, 0), QgsPoint(0, 0)])
 feature.setGeometry(geometry)
 layer.dataProvider().addFeatures([feature])

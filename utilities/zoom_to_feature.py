@@ -4,10 +4,11 @@ Utility script to zoom to a feature by id.
 
 import os
 
-feature_id = 510
+feature_id = 1
 
-file_path = os.path.expanduser("~/Downloads/LasVegas_Demo_Data/LasVegas_Route.shp")
-layer = QgsVectorLayer(file_path, "", "ogr")
+with open(f"{os.path.dirname(__file__)}/config.txt", 'r') as file:
+    FILE_PATH = file.read()
+layer = QgsVectorLayer(FILE_PATH, "", "ogr")
 
 canvas = iface.mapCanvas()
 feature = layer.getFeature(feature_id)
