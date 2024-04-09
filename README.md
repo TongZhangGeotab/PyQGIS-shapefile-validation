@@ -10,7 +10,7 @@ This repository can be cloned into any directory
 
 Open `config.txt` with a text editor, replace the example text with the path to the shapefile (note that it must be the absolute path), ensure that the entire text file is 1 line
 
-Run QGIS and open the PyQGIS IDE from the toolbar and a console should appear
+Run QGIS and click on the python icon, a console should appear
 ![python icon](images/python_icon.png)
 
 Click on the editor icon
@@ -29,3 +29,13 @@ This script will log all warnings and errors to the console, and all debug logs 
 
 The script will also output the feedback message for these warnings and errors to the console and a text file in the `feedback` directory (name is also the timestamp) as per the [Public Works: Route Shapefile Validation (Partner Guide) \[PUB\]
 ](https://docs.google.com/document/d/1PRAwFHVcfzmP5Um6crQzm4FY151ZIkIZxw5yzwEOYb4/edit#heading=h.9qa6yfvbd55k)
+
+## Using the Utilities
+
+A couple of utilities are used for debugging purposes and do not need to be run to resolve a ticket
+Note that these utilites must be run in the PyQGIS environment (see instructions above to open these scripts in the PyQGIS editor)
+
+`zoom_to_feature.py` will refresh the view window to the feature - to use this script, edit `feature_id` to be the feature you wish to zoom in on
+
+`draw_line.py` will draw a line on the shapefile - edit the attributes and geometry and run the script
+note that this does edit the shapefile, so it's best to make a copy and run it on that
