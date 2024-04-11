@@ -87,16 +87,18 @@ class Fields:
 
         data_type = self._layer.fields().field(self._optional_fields[column]).typeName()
 
-        # Check if data type name contains type we want - for cases like int8, int16, etc. names
-        if type not in data_type.lower():
-            self._type_or_value_error = True
-            self._logger.error(f"{column} datatype is {data_type} not {type}")
-
-        # Check if any of the entires have invalid values
         entries = [
             (feature[self._optional_fields[column]], feature.id())
             for feature in self._layer.getFeatures()
         ]
+
+        # Check if data type name contains type we want - for cases like int8, int16, etc. names
+        if type not in data_type.lower():
+            self._type_or_value_error = True
+            self._logger.error(f"{column} datatype is {data_type} not {type}")
+            return True, entries
+
+        # Check if any of the entires have invalid values
         for entry, id in entries:
             if entry <= 0:
                 self._type_or_value_error = True
