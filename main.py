@@ -12,10 +12,11 @@ from modules import intersections
 from modules import lengths
 from utilities import configure_logger
 
-# Upload layer and update project instance
-with open(f"{os.path.dirname(__file__)}/config.txt", 'r') as file:
-    FILE_PATH = file.read()
-
+# Prompt user for file path
+FILE_PATH = QInputDialog.getText(None, "file name" ,"Enter the full file path: ")[0]
+if not FILE_PATH:
+    with open(f"{os.path.dirname(__file__)}/config.txt", 'r') as file:
+        FILE_PATH = file.read()
 # Constant for coordinates
 CRS = "EPSG:4326"
 
@@ -24,6 +25,9 @@ MIN_BOUND = 20
 MAX_BOUND = 1000
 
 def main():
+    with open(f"{os.path.dirname(__file__)}/config.txt", 'w') as file:
+        file.write(FILE_PATH)
+
     iface.addVectorLayer(FILE_PATH, "", "ogr")
     QCoreApplication.processEvents()
     instance = QgsProject.instance()
@@ -97,9 +101,7 @@ def main():
         logger.error(f"{len(null_geoms)} features have Null geometry")
         logger.info(f"features with Null geometry: {null_geoms}")
 
-    return feedback_message
+    if feedback_message:
+        print(feedback_message)
 
-
-feedback_message = main()
-if feedback_message:
-    print(feedback_message)
+main()

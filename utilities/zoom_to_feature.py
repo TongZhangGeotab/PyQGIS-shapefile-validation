@@ -6,7 +6,7 @@ import os
 
 feature_id = 1
 
-with open(f"{os.path.dirname(__file__)}/config.txt", 'r') as file:
+with open(f"{os.path.dirname(os.path.dirname(__file__))}/config.txt", 'r') as file:
     FILE_PATH = file.read()
 layer = QgsVectorLayer(FILE_PATH, "", "ogr")
 
